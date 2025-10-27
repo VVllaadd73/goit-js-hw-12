@@ -9,20 +9,19 @@ export function createGallery(images) {
 	const galleryHTML = images
 		.map(image => `
 			<li class="cart">
-				<a class="photo_link" href="${image.largeImageURL}">
-					<img class="photo_image" src="${image.webformatURL}" alt="${image.tags}" />
-				</a>
-				<div class="photo_info">
-					<p><b>Likes:</b> ${image.likes}</p>
-					<p><b>Views:</b> ${image.views}</p>
-					<p><b>Comments:</b> ${image.comments}</p>
-					<p><b>Downloads:</b> ${image.downloads}</p>
-				</div>
-			</li>`)
+			<a class="photo_link" href="${image.largeImageURL}">
+				<img class="photo_image" src="${image.webformatURL}" alt="${image.tags}" />
+			</a>
+			<div class="photo_info">
+				<p><b>Likes:</b> ${image.likes}</p>
+				<p><b>Views:</b> ${image.views}</p>
+				<p><b>Comments:</b> ${image.comments}</p>
+				<p><b>Downloads:</b> ${image.downloads}</p>
+			</div>
+		</li>`)
 		.join('');
 
 	gallery.insertAdjacentHTML('beforeend', galleryHTML);
-
 	lightbox.refresh();
 }
 
@@ -32,21 +31,26 @@ const lightbox = new SimpleLightbox('.gallery a', {
 });
 
 
+lightbox.on('show.simplelightbox', () => {
+	document.body.style.overflow = 'hidden';
+	console.log('123456');
+
+});
+
+lightbox.on('close.simplelightbox', () => {
+	document.body.style.overflow = '';
+});
 
 export function clearGallery() {
 	gallery.innerHTML = '';
 }
 
 export function showLoader() {
-	if (loader) {
-		loader.classList.remove('hidden');
-	}
+	if (loader) loader.classList.remove('hidden');
 }
 
 export function hideLoader() {
-	if (loader) {
-		loader.classList.add('hidden');
-	}
+	if (loader) loader.classList.add('hidden');
 }
 
 export function showLoadMoreButton() {
