@@ -12,13 +12,16 @@ h2,
 h3,
 h4,
 h5,
-h6,
-p {
+h6 {
 	margin: 0;
 }
 
-p:last-child {
-	margin-bottom: 0;
+p {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
 }
 
 ul {
@@ -81,25 +84,33 @@ input:focus {
 
 .loader {
 	display: block;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
 	width: 60px;
 	height: 60px;
-	border: 6px solid #ccc;
+	border: 9px solid #ccc;
 	border-top-color: #2196f3;
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
-	z-index: 9999;
+	margin: 020px auto;
 }
 
-.hidden {
-	display: none;
+.load_container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 @keyframes spin {
 	to {
-		transform: translate(-50%, -50%) rotate(360deg);
+		transform: rotate(360deg);
 	}
+}
+
+.load_more {
+	display: block;
+	margin: 30px auto;
+}
+
+.hidden {
+	display: none;
 }
