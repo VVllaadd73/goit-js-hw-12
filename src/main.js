@@ -87,7 +87,6 @@ async function clickSearch(event) {
 	} catch (error) {
 		hideLoader();
 		iziToast.error(paramErrS);
-		console.error('Search error:', error);
 	}
 }
 
@@ -128,6 +127,5 @@ async function nextPage() {
 	} catch (error) {
 		hideLoader();
 		iziToast.error(paramErrS);
-		console.error('Pagination error:', error);
 	}
 }
