@@ -27,18 +27,15 @@ export function createGallery(images) {
 
 	gallery.insertAdjacentHTML('beforeend', galleryHTML);
 
-	// 🟢 Якщо lightbox вже існує — оновлюємо
 	if (lightbox) {
 		lightbox.refresh();
 	} else {
-		// 🆕 Ініціалізуємо вперше
 		lightbox = new SimpleLightbox('.gallery a', {
 			captionsData: 'alt',
 			captionDelay: 250,
 		});
 	}
 
-	// 🟢 Додаємо обробники кожного разу (бо refresh може їх "зламати")
 	lightbox.on('show.simplelightbox', () => {
 		document.body.style.overflow = 'hidden';
 	});
