@@ -7,6 +7,16 @@ const loader = document.querySelector('.loader');
 
 let lightbox;
 
+function bindLightboxEvents() {
+	if (!lightbox) return;
+	lightbox.on('show.simplelightbox', () => {
+		document.body.style.overflow = 'hidden';
+	});
+	lightbox.on('close.simplelightbox', () => {
+		document.body.style.overflow = '';
+	});
+}
+
 export function createGallery(images) {
 	const galleryHTML = images
 		.map(
@@ -36,13 +46,7 @@ export function createGallery(images) {
 		});
 	}
 
-	lightbox.on('show.simplelightbox', () => {
-		document.body.style.overflow = 'hidden';
-	});
-
-	lightbox.on('close.simplelightbox', () => {
-		document.body.style.overflow = '';
-	});
+	bindLightboxEvents();
 }
 
 export function clearGallery() {
@@ -50,11 +54,11 @@ export function clearGallery() {
 }
 
 export function showLoader() {
-	if (loader) loader.classList.remove('hidden');
+	loader?.classList.remove('hidden');
 }
 
 export function hideLoader() {
-	if (loader) loader.classList.add('hidden');
+	loader?.classList.add('hidden');
 }
 
 export function showLoadMoreButton() {

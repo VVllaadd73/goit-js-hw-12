@@ -2,7 +2,14 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 import { getImagesByQuery } from './js/pixabay-api.js';
-import { createGallery, clearGallery, showLoader, hideLoader, showLoadMoreButton, hideLoadMoreButton } from './js/render-functions.js';
+import {
+	createGallery,
+	clearGallery,
+	showLoader,
+	hideLoader,
+	showLoadMoreButton,
+	hideLoadMoreButton,
+} from './js/render-functions.js';
 
 const form = document.querySelector('.form');
 const input = form.elements['search-text'];
@@ -14,12 +21,14 @@ const paramErr = {
 	position: 'center',
 	timeout: 3000,
 };
+
 const paramInfo = {
 	title: 'End of results',
 	message: "We're sorry, but you've reached the end of search results.",
 	position: 'center',
 	timeout: 4000,
 };
+
 const paramErrS = {
 	title: 'Error',
 	message: 'Something went wrong. Please try again later.',
@@ -31,19 +40,16 @@ let page = 1;
 let totalPages = 0;
 let search = '';
 
-form.addEventListener("submit", clickSearch);
+form.addEventListener('submit', clickSearch);
+loadMoreButton.addEventListener('click', nextPage);
 
-loadMoreButton.addEventListener("click", () => {
-	nextPage();
-});
-
-function clickSearch(event) {
+async function clickSearch(event) {
 	event.preventDefault();
-	if (!loadMoreButton.classList.contains('hidden')) {
-		hideLoadMoreButton();
-	}
-	showLoader();
+
+	hideLoadMoreButton();
+
 	const query = input.value.trim();
+
 	if (!query) {
 		iziToast.warning({
 			title: 'Warning',
@@ -53,65 +59,75 @@ function clickSearch(event) {
 		});
 		return;
 	}
+
 	search = query;
+	page = 1;
 	clearGallery();
-	getImagesByQuery(query)
-		.then(data => {
-			if (data.hits.length === 0) {
-				hideLoader();
-				iziToast.error(paramErr);
-				return;
-			}
-			createGallery(data.hits);
-			totalPages = Math.ceil(data.totalHits / 15);
-			input.value = '';
-			hideLoader();
-			if (totalPages > page) {
-				showLoadMoreButton();
-			} else {
-				hideLoadMoreButton();
-				iziToast.info(paramInfo)
-			}
-		})
-		.catch(error => {
-			hideLoader();
-			iziToast.error(paramErrS);
-		});
+	showLoader();
+
+	try {
+		const data = await getImagesByQuery(search, page);
+		hideLoader();
+
+		if (data.hits.length === 0) {
+			iziToast.error(paramErr);
+			return;
+		}
+
+		createGallery(data.hits);
+		totalPages = Math.ceil(data.totalHits / 15);
+		input.value = '';
+
+		if (page < totalPages) {
+			showLoadMoreButton();
+		} else {
+			iziToast.info(paramInfo);
+			hideLoadMoreButton();
+		}
+	} catch (error) {
+		hideLoader();
+		iziToast.error(paramErrS);
+		console.error('Search error:', error);
+	}
 }
 
-function nextPage() {
-	if (page < totalPages) {
-		showLoader();
-		const query = search;
-		page += 1;
-		getImagesByQuery(query, page)
-			.then(data => {
-				if (data.hits.length === 0) {
-					hideLoader();
-					iziToast.error(paramErr);
-					return;
-				}
-				createGallery(data.hits);
-				hideLoader();
-				const firstCard = document.querySelector('.gallery .cart');
-				if (firstCard) {
-					const cardHeight = firstCard.getBoundingClientRect().height;
-					window.scrollBy({
-						top: cardHeight * 2,
-						behavior: 'smooth'
-					});
-				}
-				if (page >= totalPages) {
-					hideLoadMoreButton();
-					iziToast.info(paramInfo);
-				}
-			})
-			.catch(error => {
-				hideLoader();
-				iziToast.error(paramErrS);
-			});
-	} else {
+async function nextPage() {
+	if (page >= totalPages) {
 		hideLoadMoreButton();
 		iziToast.info(paramInfo);
+		return;
+	}
+
+	page += 1;
+	showLoader();
+
+	try {
+		const data = await getImagesByQuery(search, page);
+		hideLoader();
+
+		if (data.hits.length === 0) {
+			iziToast.error(paramErr);
+			return;
+		}
+
+		createGallery(data.hits);
+
+		const firstCard = document.querySelector('.gallery .cart');
+		if (firstCard) {
+			const cardHeight = firstCard.getBoundingClientRect().height;
+			window.scrollBy({
+				top: cardHeight * 2,
+				behavior: 'smooth',
+			});
+		}
+
+		if (page >= totalPages) {
+			hideLoadMoreButton();
+			iziToast.info(paramInfo);
+		}
+	} catch (error) {
+		hideLoader();
+		iziToast.error(paramErrS);
+		console.error('Pagination error:', error);
 	}
 }
