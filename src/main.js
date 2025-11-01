@@ -40,10 +40,7 @@ let page = 1;
 let totalPages = 0;
 let search = '';
 
-form.addEventListener('submit', clickSearch);
-loadMoreButton.addEventListener('click', nextPage);
-
-async function clickSearch(event) {
+const clickSearch = async (event) => {
 	event.preventDefault();
 
 	hideLoadMoreButton();
@@ -89,6 +86,9 @@ async function clickSearch(event) {
 		iziToast.error(paramErrS);
 	}
 }
+
+form.addEventListener('submit', clickSearch);
+loadMoreButton.addEventListener('click', nextPage);
 
 async function nextPage() {
 	if (page >= totalPages) {
